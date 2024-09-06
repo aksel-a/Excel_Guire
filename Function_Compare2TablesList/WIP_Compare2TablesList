@@ -1,0 +1,191 @@
+Function GetFilteredRows(wsA As Worksheet, wsB As Worksheet, wsC As Worksheet, colA As String, colB As String)
+    Dim result() As Variant
+    Dim wsARange As Range
+    Dim wsBRange As Range
+    Dim i As Long, j As Long, lastRowA As Long, lastRowB As Long
+    Dim inWSB As Boolean
+    
+    ' Get the last row for WS_A and WS_B
+    lastRowA = wsA.Cells(wsA.Rows.Count, colA).End(xlUp).Row
+    lastRowB = wsB.Cells(wsB.Rows.Count, colB).End(xlUp).Row
+    
+    ' Define the ranges for WS_A and WS_B "Number" columns
+    Set wsARange = wsA.Range(colA & "2:" & colA & lastRowA) ' Assuming headers in the first row
+    Set wsBRange = wsB.Range(colB & "2:" & colB & lastRowB)
+    
+    ' Initialize result array to size of WS_A's rows
+    ReDim result(1 To lastRowA - 1, 1 To wsA.Columns.Count)
+    
+    j = 1 ' Result row index
+    
+    ' Loop through WS_A rows
+    For i = 1 To wsARange.Rows.Count
+        inWSB = Application.WorksheetFunction.CountIf(wsBRange, wsARange.Cells(i, 1)) > 0
+        
+        If Not inWSB Then
+            ' If value isn't in WS_B, copy the entire row to result array
+            wsA.Rows(i + 1).Copy Destination:=wsC.Rows(j + 1) ' Copy row to WS_C (adjust row as necessary)
+            j = j + 1
+        End If
+    Next i
+
+    ' Return the result array (Optional if returning data)
+    GetFilteredRows = result
+End Function
+
+Sub FilterData()
+    Dim wsA As Worksheet, wsB As Worksheet, wsC As Worksheet
+    
+    ' Set worksheet references for WS_A, WS_B, and WS_C
+    Set wsA = ThisWorkbook.Sheets("WS_A")
+    Set wsB = ThisWorkbook.Sheets("WS_B")
+    Set wsC = ThisWorkbook.Sheets("WS_C")
+    
+    ' Call the GetFilteredRows function
+    GetFilteredRows wsA, wsB, wsC, "A", "A"
+End Sub
+
+
+Function CopyRowsIfNotInWSB(wsA As Worksheet, wsB As Worksheet, wsC As Worksheet)
+    Dim lastRowA As Long, lastRowB As Long, lastRowC As Long
+    Dim i As Long, found As Range
+    
+    lastRowA = wsA.Cells(wsA.Rows.Count, "A").End(xlUp).Row
+    lastRowB = wsB.Cells(wsB.Rows.Count, "A").End(xlUp).Row
+    lastRowC = 1 ' Assuming you want to start copying in Row 1 of WS_C
+    
+    For i = 3 To lastRowA ' Assuming headers in Row 1
+        Set found = wsB.Range("A:A").Find(wsA.Cells(i, 1).Value, LookIn:=xlValues, LookAt:=xlWhole)
+        If found Is Nothing Then
+            wsA.Rows(i).Copy wsC.Rows(lastRowC)
+            lastRowC = lastRowC + 1
+        End If
+    Next i
+End Function
+
+Sub ExecuteCopyRowsIfNotInWSB()
+    Dim wsA As Worksheet, wsB As Worksheet, wsC As Worksheet
+    
+    Set wsA = ThisWorkbook.Sheets("WS_A")
+    Set wsB = ThisWorkbook.Sheets("WS_B")
+    Set wsC = ThisWorkbook.Sheets("WS_C")
+    
+    Call CopyRowsIfNotInWSB(wsA, wsB, wsC)
+End Sub
+
+
+
+
+Function CopyRowsIfNotInWSB(wsA As Worksheet, wsB As Worksheet, wsC As Worksheet)
+    Dim lastRowA As Long, lastRowB As Long, lastRowC As Long
+    Dim i As Long, found As Range
+    
+    lastRowA = wsA.Cells(wsA.Rows.Count, "F").End(xlUp).Row
+    lastRowB = wsB.Cells(wsB.Rows.Count, "F").End(xlUp).Row
+    lastRowC = 1 ' Assuming you want to start copying in Row 1 of WS_C
+    
+    For i = 3 To lastRowA ' Start from row 3 for WS_A
+        Set found = wsB.Range("F2:F" & lastRowB).Find(wsA.Cells(i, "F").Value, LookIn:=xlValues, LookAt:=xlWhole)
+        If found Is Nothing Then
+            wsA.Rows(i).Copy wsC.Rows(lastRowC)
+            lastRowC = lastRowC + 1
+        End If
+    Next i
+End Function
+
+Sub ExecuteCopyRowsIfNotInWSB()
+    Dim wsA As Worksheet, wsB As Worksheet, wsC As Worksheet
+    
+    Set wsA = ThisWorkbook.Sheets("01-QS-Rooms-SOLL_IST_Werte")
+    Set wsB = ThisWorkbook.Sheets("_FRP413")
+    Set wsC = ThisWorkbook.Sheets("QS_NotInFRP")
+    
+    Call CopyRowsIfNotInWSB(wsA, wsB, wsC)
+End Sub
+
+
+Function CopyRowsIfNotInWSB(wsAName As String, wsBName As String, wsCName As String, colA As String, colB As String)
+    Dim wsA As Worksheet, wsB As Worksheet, wsC As Worksheet
+    Dim lastRowA As Long, lastRowB As Long, lastRowC As Long
+    Dim i As Long, found As Range
+    
+    ' Set worksheet references
+    Set wsA = ThisWorkbook.Sheets(wsAName)
+    Set wsB = ThisWorkbook.Sheets(wsBName)
+    Set wsC = ThisWorkbook.Sheets(wsCName)
+    
+    ' Get the last row for WS_A and WS_B
+    lastRowA = wsA.Cells(wsA.Rows.Count, colA).End(xlUp).Row
+    lastRowB = wsB.Cells(wsB.Rows.Count, colB).End(xlUp).Row
+    lastRowC = 1 ' Assuming you want to start copying in Row 1 of WS_C
+    
+    ' Loop through WS_A rows
+    For i = 3 To lastRowA ' Start from row 3 for WS_A
+        Set found = wsB.Range(colB & "2:" & colB & lastRowB).Find(wsA.Cells(i, colA).Value, LookIn:=xlValues, LookAt:=xlWhole)
+        If found Is Nothing Then
+            wsA.Rows(i).Copy wsC.Rows(lastRowC)
+            lastRowC = lastRowC + 1
+        End If
+    Next i
+End Function
+
+Sub ExecuteCopyRowsIfNotInWSB()
+    ' Define worksheet names and column references
+    Dim wsAName As String, wsBName As String, wsCName As String
+    Dim colA As String, colB As String
+    
+    wsAName = "01-QS-Rooms-SOLL_IST_Werte"
+    wsBName = "_FRP413"
+    wsCName = "QS_NotInFRP"
+    colA = "F"
+    colB = "F"
+    
+    ' Call the CopyRowsIfNotInWSB function with dynamic parameters
+    Call CopyRowsIfNotInWSB(wsAName, wsBName, wsCName, colA, colB)
+End Sub
+
+
+' This Script test two columns in two different sheets and copy the rows that are not in the second sheet to a third sheet
+
+Function CopyRowsIfNotInWSB(wsAName As String, wsBName As String, wsCName As String, colA As String, colB As String, startRowA As Long, startRowB As Long)
+    Dim wsA As Worksheet, wsB As Worksheet, wsC As Worksheet
+    Dim lastRowA As Long, lastRowB As Long, lastRowC As Long
+    Dim i As Long, found As Range
+    
+    ' Set worksheet references
+    Set wsA = ThisWorkbook.Sheets(wsAName)
+    Set wsB = ThisWorkbook.Sheets(wsBName)
+    Set wsC = ThisWorkbook.Sheets(wsCName)
+    
+    ' Get the last row for WS_A and WS_B
+    lastRowA = wsA.Cells(wsA.Rows.Count, colA).End(xlUp).Row
+    lastRowB = wsB.Cells(wsB.Rows.Count, colB).End(xlUp).Row
+    lastRowC = 1 ' Assuming you want to start copying in Row 1 of WS_C
+    
+    ' Loop through WS_A rows starting from startRowA
+    For i = startRowA To lastRowA
+        Set found = wsB.Range(colB & startRowB & ":" & colB & lastRowB).Find(wsA.Cells(i, colA).Value, LookIn:=xlValues, LookAt:=xlWhole)
+        If found Is Nothing Then
+            wsA.Rows(i).Copy wsC.Rows(lastRowC)
+            lastRowC = lastRowC + 1
+        End If
+    Next i
+End Function
+
+Sub ExecuteCopyRowsIfNotInWSB()
+    ' Define worksheet names, column references, and starting rows
+    Dim wsAName As String, wsBName As String, wsCName As String
+    Dim colA As String, colB As String
+    Dim startRowA As Long, startRowB As Long
+    
+    wsAName = "01-QS-Rooms-SOLL_IST_Werte"
+    wsBName = "_FRP413"
+    wsCName = "QS_NotInFRP"
+    colA = "F"
+    colB = "F"
+    startRowA = 3 ' Data starts at row 3 in WS_A
+    startRowB = 2 ' Data starts at row 2 in WS_B
+    
+    ' Call the CopyRowsIfNotInWSB function with dynamic parameters
+    Call CopyRowsIfNotInWSB(wsAName, wsBName, wsCName, colA, colB, startRowA, startRowB)
+End Sub
