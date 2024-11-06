@@ -1,4 +1,10 @@
 Attribute VB_Name = "InsertRowsBasedOnColumnValue"
+' Author: Aksel Alvarez
+' Github: https://github.com/aksel-a/Excel_Guire
+' Date: 2024-10-18
+' Description: This VBA macro inserts rows based on the numeric values in one column (you will need to adapt it to suit your needs) of the active worksheet.
+' Version: v1.0
+
 Sub InsertRowsBasedOnColumnValue()
     Dim ws As Worksheet
     Dim rng As Range
@@ -11,11 +17,11 @@ Sub InsertRowsBasedOnColumnValue()
     Set ws = ActiveSheet
     
     ' Find the last row in column A (adjust if necessary)
-    lastRow = ws.Cells(ws.Rows.Count, "I").End(xlUp).Row
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
     
-    ' Set the range to the column where the values are (e.g., Column A)
-    ' Change "A" to the desired column
-    Set rng = ws.Range("I1:I" & lastRow)
+    ' Set the range to the column where the values are (e.g., Column I)
+    ' Change "I" to the desired column
+    Set rng = ws.Range("A1:A" & lastRow)
     
     ' Loop through each cell in the range (go backwards to avoid conflict when inserting rows)
     For i = lastRow To 1 Step -1
@@ -33,7 +39,5 @@ Sub InsertRowsBasedOnColumnValue()
     Next i
     
     ' Refresh last row reference after insertion
-    lastRow = ws.Cells(ws.Rows.Count, "I").End(xlUp).Row
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
 End Sub
-
-
